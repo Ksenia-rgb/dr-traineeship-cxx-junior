@@ -1,7 +1,7 @@
 .PHONY: all clean run build test
 
 SRC_DIR     := src
-BUILD_DIR   := build
+BUILD_DIR   := out
 TEST_DIR    := tests
 
 CXX = g++
