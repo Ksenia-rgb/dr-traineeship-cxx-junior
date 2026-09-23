@@ -2,33 +2,15 @@
 
 #include "trim.hpp"
 
-namespace
-{
-  void trimRightGeneral(char* str);
-
-  void trimRightGeneral(char* str)
-  {
-    char end_delim = '\0';
-    size_t i = 0;
-    while (str[i] != end_delim)
-    {
-      ++i;
-    }
-    --i;
-
-    while (std::isspace(static_cast< int >(str[i])) || static_cast< int >(str[i]) == '_')
-    {
-      --i;
-    }
-    str[i + 1] = '\0';
-  }
-}
-
-
 int main()
 {
-  std::string str{"dfj____________nsjdf__________________________________________________"};
-  char* char_str = str.data();
-  trimRightGeneral(char_str);
-  std::cout << char_str << '\n';
+  std::string str{"dfj____________________"};
+  //char* char_str1 = str.data();
+  char* char_str2 = str.data();
+
+  //easy::TrimRight(char_str1);
+  //std::cout << char_str1 << '\n';
+
+  stdsimd::TrimRight(char_str2);
+  std::cout << char_str2 << '\n';
 }

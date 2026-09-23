@@ -9,5 +9,9 @@ namespace intrinsimd
 {
   void TrimRight(char* str);
 }
+namespace easy
+{
+  void TrimRight(char* str);
+}
 
 #endif
