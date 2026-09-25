@@ -5,7 +5,7 @@ BUILD_DIR   := out
 TEST_DIR    := tests
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -I$(SRC_DIR)
+CXXFLAGS = -O0 -Wall -Wextra -Werror -I$(SRC_DIR)
 
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 TEST_SOURCES = $(wildcard $(TEST_DIR)/test-*.cpp)
