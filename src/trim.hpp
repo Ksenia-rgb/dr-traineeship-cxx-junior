@@ -4,6 +4,7 @@
 namespace stdsimd
 {
   void TrimRight(char* str);
+  void TrimRightOne(char* str);
 }
 namespace intrinsimd
 {

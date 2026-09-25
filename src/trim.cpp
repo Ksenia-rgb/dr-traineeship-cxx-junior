@@ -41,13 +41,6 @@ void stdsimd::TrimRight(char* str)
   }
   if (!replace_for)
   {
-    /*stdx::simd_mask mask = stdx::where(stdx::native_simd< size_t >(
-      [str](char* j)
-      {
-        return j > str ? 1u : 0u;
-      }
-    ) != 0, stdx::simd_mask< char >(true));
-    }*/
     simd_t values;
     values.copy_from(str, stdx::element_aligned);
     stdx::simd_mask< char > mask = values != simd_t('_');
@@ -67,12 +60,48 @@ void stdsimd::TrimRight(char* str)
   *replace_for = '\0';
 }
 
-/*void intrinsimd::TrimRight(char* str)
+void stdsimd::TrimRightOne(char* str)
 {
-}*/
+  namespace stdx = std::experimental;
+  using simd_t = stdx::native_simd< char >;
+  constexpr size_t simd_size = simd_t::size();
+
+  char space = ' ';
+  char end_str = '\0';
+
+  size_t end_num = 0;
+  size_t tail_space_num = 0;
+  for (size_t i = 0; !end_num; i += simd_size)
+  {
+    simd_t values;
+    values.copy_from(str + i, stdx::element_aligned);
+
+    stdx::simd_mask< char > mask_end = values == simd_t(end_str);
+    stdx::simd_mask< char > mask_space = (values != simd_t(space) && values != simd_t(end_str));
+    if (stdx::any_of(mask_end))
+    {
+      end_num = i + stdx::find_first_set(mask_end);
+    }
+    if (stdx::any_of(mask_space))
+    {
+      size_t div = i + stdx::find_last_set(mask_space);
+      if (!end_num || (end_num && div < end_num))
+      {
+        tail_space_num = div + 1;
+      }
+    }
+  }
+  char* end = str + end_num;
+  char* tail_space = str + tail_space_num;
+  if (tail_space != end)
+  {
+    *tail_space = '\0';
+  }
+}
 
 void easy::TrimRight(char* str)
 {
+  char space = ' ';
   char end_delim = '\0';
   size_t i = 0;
   while (str[i] != end_delim)
@@ -81,7 +110,7 @@ void easy::TrimRight(char* str)
   }
   --i;
 
-  while (std::isspace(static_cast< int >(str[i])) || static_cast< int >(str[i]) == '_')
+  while (str[i] == space)
   {
     --i;
   }
