@@ -6,7 +6,6 @@ namespace trim
   namespace stdsimd
   {
     void TrimRight(char* str);
-    void TrimRightOnePass(char* str);
   }
   namespace sse2
   {
