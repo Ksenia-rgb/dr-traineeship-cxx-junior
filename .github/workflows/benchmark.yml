@@ -15,7 +15,7 @@ env:
   FILES_NEON: src/trim-neon.cpp
   TESTS_NEON: tests/test-trim-neon.cpp
   VLG_OPTIONS: --tool=cachegrind --cache-sim=yes
-  CG_OPTIONS: --show=Dr --auto=no
+  CG_OPTIONS: --show=Dr --auto=no --threshold=1.0
 
 jobs:
   test-scalar-stdsimd:
@@ -40,7 +40,7 @@ jobs:
 
       - name: Run tests
         run: |
-          g++ -msse2 $FILES_SSE2 $TESTS_SSE2 $TEST_MAIN -o trim-test
+          g++ -msse2 -Isrc $FILES_SSE2 $TESTS_SSE2 $TEST_MAIN -o trim-test
           ./trim-test
   test-avx2:
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
 
       - name: Run tests
         run: |
-          g++ -mavx2 $FILES_AVX22 $TESTS_AVX2 $TEST_MAIN -o trim-test
+          g++ -mavx2 -Isrc $FILES_AVX22 $TESTS_AVX2 $TEST_MAIN -o trim-test
           ./trim-test
   test-neon:
     runs-on: ubuntu-24.04-arm
@@ -64,7 +64,7 @@ jobs:
 
       - name: Run tests
         run: |
-          g++ -march=armv8-a+simd $FILES_NEON $TESTS_NEON $TEST_MAIN -o trim-test
+          g++ -march=armv8-a+simd -Isrc $FILES_NEON $TESTS_NEON $TEST_MAIN -o trim-test
           ./trim-test
   cachegrind-sse2:
     needs: [test-scalar-stdsimd, test-sse2]
