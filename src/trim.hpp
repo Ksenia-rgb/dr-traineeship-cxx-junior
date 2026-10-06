@@ -20,10 +20,6 @@ namespace trim
   {
     void TrimRight(char* str);
   }
-  namespace riscv
-  {
-    void TrimRight(char* str);
-  }
   namespace scalar
   {
     void TrimRight(char* str);

@@ -39,10 +39,6 @@ int main(int argc, char* argv[])
   trim_platform_func = trim::neon::TrimRight;
   #endif
 
-  #if defined(__riscv_v_intrinsic) && defined(__riscv_vector)
-  trim_platform_func = trim::riscv::TrimRight;
-  #endif
-
   trim::scalar::TrimRight(str1.data());
   trim::stdsimd::TrimRight(str2.data());
   trim_platform_func(str3.data());
