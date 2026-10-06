@@ -5,7 +5,7 @@ on: pull_request
 env:
   FILE_STR: long.txt
   FILE_MAIN: src/main.cpp
-  TEST_MAIN: test/test-main.cpp
+  TEST_MAIN: tests/test-main.cpp
   FILES_ALL: src/trim-scalar.cpp src/trim-stdsimd.cpp
   TESTS_ALL: tests/test-trim-scalar.cpp tests/test-trim-stdsimd.cpp
   FILES_SSE2: src/trim-sse2.cpp
@@ -28,7 +28,7 @@ jobs:
 
       - name: Run tests
         run: |
-          g++ $FILES_ALL $TESTS_ALL $TEST_MAIN -o trim-test
+          g++ -Isrc $FILES_ALL $TESTS_ALL $TEST_MAIN -o trim-test
           ./trim-test
   test-sse2:
     runs-on: ubuntu-latest

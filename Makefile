@@ -1,35 +1,57 @@
-.PHONY: all clean run build test
+.PHONY: all run build tests test clean
 
-SRC_DIR     := src
-BUILD_DIR   := out
-TEST_DIR    := tests
+BUILD_DIR = out
+OBJ_DIR = $(BUILD_DIR)/obj
+BIN_DIR = $(BUILD_DIR)/bin
+SOURCE_DIR = src
+TEST_DIR = tests
 
 CXX = g++
-CXXFLAGS = -O0 -Wall -Wextra -Werror -I$(SRC_DIR)
+CPPFLAGS = -std=c++17 -Wall -I $(SOURCE_DIR)
+CXXFLAGS = -g
 
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-TEST_SOURCES = $(wildcard $(TEST_DIR)/test-*.cpp)
-OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCES:.cpp=.o)))
-MAIN_OBJECT = $(BUILD_DIR)/main.o
+sources = $(wildcard $(SOURCE_DIR)/*.cpp)
+objects = $(addprefix $(OBJ_DIR)/, $(sources:.cpp=.o))
 
-all: build
+test_sources = $(wildcard $(TEST_DIR)/*.cpp)
+test_objects = $(addprefix $(OBJ_DIR)/, $(test_sources:.cpp=.o))
 
-build: $(BUILD_DIR)/main
+main_bin = $(BIN_DIR)/main
+test_bin = $(BIN_DIR)/tests
+
+all: build tests
 
 run: build
-	./$(BUILD_DIR)/main $(ARGS)
+	@echo "[RUN]"
+	@./$(main_bin) $(ARGS)
 
-test: build
-	@echo "[TESTS]"
+build: $(objects) | $(BIN_DIR)
+	@$(CXX) -o $(main_bin) $^
+	@echo "[LINK] $@"
 
-$(BUILD_DIR)/main: $(OBJECTS) | dir
-	@$(CXX) $(CXXFLAGS) -o $@ $^
+tests: $(test_objects) $(objects) | $(BIN_DIR)
+	@$(CXX) -o $(test_bin) $(filter-out %/main.o,$^)
+	@echo "[LINK] $@"
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | dir
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
-
-dir:
-	@mkdir -p $(BUILD_DIR)
+test: tests
+	@echo "[RUN] tests"
+	@./$(test_bin)
 
 clean:
-	@rm -rf $(BUILD_DIR)
+	rm -rf $(OBJ_DIR)
+	rm -rf $(BIN_DIR)
+
+$(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "[BUILD] $<"
+
+$(BUILD_DIR):
+	@mkdir -p $@
+
+$(OBJ_DIR): $(BUILD_DIR)
+	@mkdir -p $@
+	@mkdir -p $(OBJ_DIR)/src
+	@mkdir -p $(OBJ_DIR)/tests
+
+$(BIN_DIR): $(BUILD_DIR)
+	@mkdir -p $@
