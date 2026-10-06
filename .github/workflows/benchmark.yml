@@ -14,21 +14,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y valgrind
 
-      - name: Build for SSE2
+      - name: Build for x86 SSE2
         run: |
-          g++ -O3 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o3
-          g++ -O0 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o0
+          g++ -O3 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_sse2_o3
+          g++ -O0 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_sse2_o0
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o3.out ./trim_x86sse2_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o0.out ./trim_x86sse2_o0
+          python3 .github/workflows/generator.py
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-sse2-o3.out ./trim_sse2_o3 long.txt
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-sse2-o0.out ./trim_sse2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
         with:
           name: cachegrind-x86sse2
-          path: cachegrind-x86sse2_*.out
+          path: cachegrind-x86sse2-*.out
 
   cachegrind-avx2:
     runs-on: ubuntu-latest
@@ -41,23 +42,24 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y valgrind
 
-      - name: Build for AVX2
+      - name: Build for x86 AVX2
         run: |
-          g++ -O3 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o3
-          g++ -O0 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o0
+          g++ -O3 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_avx2_o3
+          g++ -O0 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_avx2_o0
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o3.out ./trim_x86avx2_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o0.out ./trim_x86avx2_o0
+          python3 .github/workflows/generator.py
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-avx2-o3.out ./trim_avx2_o3 long.txt
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-avx2-o0.out ./trim_avx2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
         with:
           name: cachegrind-x86avx2
-          path: cachegrind-x86avx2_*.out
+          path: cachegrind-x86avx2-*.out
 
-  cachegrind-arm64:
+  cachegrind-neon:
     runs-on: ubuntu-24.04-arm
 
     steps:
@@ -68,36 +70,48 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y valgrind
 
-      - name: Build for ARM64
+      - name: Build for ARM64 NEON
         run: |
-          g++ -O3 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_arm64_o3
-          g++ -O0 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_arm64_o0
+          g++ -O3 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_neon_o3
+          g++ -O0 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_neon_o0
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o3.out ./trim_arm64_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o0.out ./trim_arm64_o0
+          python3 .github/workflows/generator.py
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-neon-o3.out ./trim_neon_o3 long.txt
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-neon-o0.out ./trim_neon_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
         with:
-          name: cachegrind-arm64
-          path: cachegrind-arm64_*.out
+          name: cachegrind-neon
+          path: cachegrind-neon-*.out
   result:
+    needs: [cachegrind-sse2, cachegrind-avx2, cachegrind-neon]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
+      - name: Download all cachegrind results
+        uses: actions/download-artifact@v4
+        with:
+          path: res/
+
       - name: Output Results SSE2
         run: |
-          cg_annotate --show=Dr --auto=no cachegrind_x86sse2-o3.out
-          cg_annotate --show=Dr --auto=no cachegrind_x86sse2-o0.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o3.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o0.out
       - name: Output Results AVX2
         run: |
-          cg_annotate --show=Dr --auto=no cachegrind_x86avx2-o3.out
-          cg_annotate --show=Dr --auto=no cachegrind_x86avx2-o0.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o3.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o0.out
       - name: Output Results NEON
         run: |
-          cg_annotate --show=Dr --auto=no cachegrind_arm64-o3.out
-          cg_annotate --show=Dr --auto=no cachegrind_arm64-o0.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o3.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o0.out
