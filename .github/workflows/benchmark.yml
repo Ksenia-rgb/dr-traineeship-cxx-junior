@@ -26,7 +26,6 @@ jobs:
       - name: Generate test file
         run: |
           python3 .github/workflows/generator.py $FILE_STR
-          ls -la test-input.txt 
 
       - name: Upload test file
         uses: actions/upload-artifact@v4
