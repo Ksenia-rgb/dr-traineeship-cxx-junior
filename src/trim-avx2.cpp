@@ -7,8 +7,6 @@
 
 void trim::avx2::TrimRight(char* str)
 {
-  std::cout << "AVX2\n";
-
   constexpr size_t simd_size = sizeof(__m256i);
 
   const char delim_end   = '\0';
@@ -42,7 +40,7 @@ void trim::avx2::TrimRight(char* str)
     int mask_eq_space = ~(_mm256_movemask_epi8(cmp_space));
     if (mask_eq_space != 0)
     {
-      int last = sizeof(int) - 1 - __builtin_clz(mask_eq_space);
+      int last = sizeof(int) * 8 - 1 - __builtin_clz(mask_eq_space);
       replace_for = temp - simd_size + last + 1;
     }
 

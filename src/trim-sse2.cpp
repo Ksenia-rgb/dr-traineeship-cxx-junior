@@ -8,8 +8,6 @@
 
 void trim::sse2::TrimRight(char* str)
 {
-  std::cout << "SSE2\n";
-
   constexpr size_t simd_size = sizeof(__m128i);
 
   const char delim_end   = '\0';
@@ -43,7 +41,7 @@ void trim::sse2::TrimRight(char* str)
     int mask_space = _mm_movemask_epi8(cmp_space) ^ 0xFFFF; // need to invert only 16 low bits, because _mm_movemask_epi8 sets 0 for 16 high bits always
     if (mask_space != 0)
     {
-      int last = sizeof(int) - 1 - __builtin_clz(mask_space);
+      int last = sizeof(int) * 8 - 1 - __builtin_clz(mask_space);
       replace_for = temp - simd_size + last + 1;
     }
 

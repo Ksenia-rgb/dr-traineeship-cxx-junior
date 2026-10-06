@@ -5,8 +5,6 @@
 
 void trim::stdsimd::TrimRight(char* str)
 {
-  std::cout << "STDSIMD\n";
-
   namespace stdx = std::experimental;
   using simd_t = stdx::native_simd< char >;
   using simd_mask_t = stdx::native_simd_mask< char >;

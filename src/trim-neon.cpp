@@ -54,8 +54,6 @@ namespace
 
 void trim::neon::TrimRight(char* str)
 {
-  std::cout << "NEON\n";
-
   constexpr size_t simd_size = sizeof(uint8x16_t);
 
   const char delim_end = '\0';

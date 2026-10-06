@@ -5,8 +5,6 @@
 
 void trim::scalar::TrimRight(char* str)
 {
-  std::cout << "SCALAR\n";
-
   char delim_end = '\0';
   char delim_space = ' ';
 
