@@ -111,13 +111,13 @@ jobs:
 
       - name: Output Results SSE2
         run: |
-          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o3.out
-          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o0.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o3.out | sed -n '/-- Function:file/,/^$/p'
+          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o0.out | sed -n '/-- Function:file/,/^$/p'
       - name: Output Results AVX2
         run: |
-          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o3.out
-          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o0.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o3.out | sed -n '/-- Function:file/,/^$/p'
+          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o0.out | sed -n '/-- Function:file/,/^$/p'
       - name: Output Results NEON
         run: |
-          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o3.out
-          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o0.out
+          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o3.out | sed -n '/-- Function:file/,/^$/p'
+          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o0.out | sed -n '/-- Function:file/,/^$/p'
