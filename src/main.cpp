@@ -28,7 +28,9 @@ int main(int argc, char* argv[])
   trim_t trim_platform_func = nullptr;
 
   #ifdef __SSE2__
+  #ifndef __AVX2__
   trim_platform_func = trim::sse2::TrimRight;
+  #endif
   #endif
 
   #ifdef __AVX2__
