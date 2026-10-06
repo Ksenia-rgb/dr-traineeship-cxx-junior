@@ -7,6 +7,8 @@ env:
   FILES_SSE2: src/trim-sse2.cpp
   FILES_AVX2: src/trim-avx2.cpp
   FILES_NEON: src/trim-neon.cpp
+  VLG_OPTIONS: --tool=cachegrind --cache-sim=yes
+  CG_OPTIONS: --show=Dr --auto=no
 
 jobs:
   cachegrind-sse2:
@@ -28,8 +30,8 @@ jobs:
       - name: Run Cachegrind
         run: |
           python3 .github/workflows/generator.py
-          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-sse2-o3.out ./trim_sse2_o3 long.txt
-          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-sse2-o0.out ./trim_sse2_o0 long.txt
+          valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-sse2-o3.out ./trim_sse2_o3 long.txt
+          valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-sse2-o0.out ./trim_sse2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -56,8 +58,8 @@ jobs:
       - name: Run Cachegrind
         run: |
           python3 .github/workflows/generator.py
-          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-avx2-o3.out ./trim_avx2_o3 long.txt
-          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-avx2-o0.out ./trim_avx2_o0 long.txt
+          valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-avx2-o3.out ./trim_avx2_o3 long.txt
+          valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-avx2-o0.out ./trim_avx2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -84,8 +86,8 @@ jobs:
       - name: Run Cachegrind
         run: |
           python3 .github/workflows/generator.py
-          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-neon-o3.out ./trim_neon_o3 long.txt
-          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-neon-o0.out ./trim_neon_o0 long.txt
+          valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-neon-o3.out ./trim_neon_o3 long.txt
+          valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-neon-o0.out ./trim_neon_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -111,13 +113,13 @@ jobs:
 
       - name: Output Results SSE2
         run: |
-          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o3.out | sed -n '/-- Function:file/,/^$/p'
-          cg_annotate --show=Dr --auto=no res/cachegrind-sse2/cachegrind-sse2-o0.out | sed -n '/-- Function:file/,/^$/p'
+          cg_annotate $CG_OPTIONS res/cachegrind-sse2/cachegrind-sse2-o3.out | sed -n '/-- Function:file/,$p'
+          cg_annotate $CG_OPTIONS res/cachegrind-sse2/cachegrind-sse2-o0.out | sed -n '/-- Function:file/,$p'
       - name: Output Results AVX2
         run: |
-          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o3.out | sed -n '/-- Function:file/,/^$/p'
-          cg_annotate --show=Dr --auto=no res/cachegrind-avx2/cachegrind-avx2-o0.out | sed -n '/-- Function:file/,/^$/p'
+          cg_annotate $CG_OPTIONS res/cachegrind-avx2/cachegrind-avx2-o3.out | sed -n '/-- Function:file/,$p'
+          cg_annotate $CG_OPTIONS res/cachegrind-avx2/cachegrind-avx2-o0.out | sed -n '/-- Function:file/,$p'
       - name: Output Results NEON
         run: |
-          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o3.out | sed -n '/-- Function:file/,/^$/p'
-          cg_annotate --show=Dr --auto=no res/cachegrind-neon/cachegrind-neon-o0.out | sed -n '/-- Function:file/,/^$/p'
+          cg_annotate $CG_OPTIONS res/cachegrind-neon/cachegrind-neon-o3.out | sed -n '/-- Function:file/,$p'
+          cg_annotate $CG_OPTIONS res/cachegrind-neon/cachegrind-neon-o0.out | sed -n '/-- Function:file/,$p'
