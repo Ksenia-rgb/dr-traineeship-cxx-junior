@@ -9,6 +9,7 @@ void trim::stdsimd::TrimRight(char* str)
 
   namespace stdx = std::experimental;
   using simd_t = stdx::native_simd< char >;
+  using simd_mask_t = stdx::native_simd_mask< char >;
   constexpr size_t simd_size = simd_t::size();
 
   const char delim_end = '\0';
@@ -24,7 +25,7 @@ void trim::stdsimd::TrimRight(char* str)
     simd_t simd_values;
     simd_values.copy_from(str + i, stdx::element_aligned);
 
-    stdx::simd_mask< char > mask_end = (simd_values == simd_delim_end);
+    simd_mask_t mask_end = (simd_values == simd_delim_end);
     if (stdx::any_of(mask_end))
     {
       num_end = i + stdx::find_first_set(mask_end);
@@ -39,7 +40,7 @@ void trim::stdsimd::TrimRight(char* str)
     simd_t simd_values;
     simd_values.copy_from(temp - simd_size, stdx::element_aligned);
 
-    stdx::simd_mask< char > mask_space = (simd_values != simd_delim_space);
+    simd_mask_t mask_space = (simd_values != simd_delim_space);
     if (stdx::any_of(mask_space))
     {
       replace_for = temp - simd_size + stdx::find_last_set(mask_space) + 1;
@@ -68,6 +69,7 @@ void trim::stdsimd::TrimRightOnePass(char* str)
 
   namespace stdx = std::experimental;
   using simd_t = stdx::native_simd< char >;
+  using simd_mask_t = stdx::native_simd_mask< char >;
   constexpr size_t simd_size = simd_t::size();
 
   const char delim_end = '\0';
@@ -84,7 +86,7 @@ void trim::stdsimd::TrimRightOnePass(char* str)
     simd_t simd_values;
     simd_values.copy_from(str + i, stdx::element_aligned);
 
-    stdx::simd_mask< char > mask_end = (simd_values == simd_delim_end);
+    simd_mask_t mask_end = (simd_values == simd_delim_end);
     if (stdx::any_of(mask_end))
     {
       num_end = i + stdx::find_first_set(mask_end);
@@ -92,7 +94,7 @@ void trim::stdsimd::TrimRightOnePass(char* str)
       simd_t simd_tail;
       simd_tail.copy_from(str + num_end - simd_size, stdx::element_aligned);
 
-      stdx::simd_mask< char > mask_space = (simd_tail != simd_delim_space);
+      simd_mask_t mask_space = (simd_tail != simd_delim_space);
       if (stdx::any_of(mask_space))
       {
         num_replace_for = num_end - simd_size + stdx::find_last_set(mask_space) + 1;
@@ -100,7 +102,7 @@ void trim::stdsimd::TrimRightOnePass(char* str)
     }
     else
     {
-      stdx::simd_mask< char > mask_space = (simd_values != simd_delim_space);
+      simd_mask_t mask_space = (simd_values != simd_delim_space);
       if (stdx::any_of(mask_space))
       {
         num_replace_for = i + stdx::find_last_set(mask_space) + 1;

@@ -23,11 +23,9 @@ int main(int argc, char* argv[])
   char str1[] = " a  aa       ";
   char str2[] = "f   gd                              ";
   char str3[] = "h   hh                   ";
-  char str4[] = "oo   o      ";
   //std::string str1 = str;
   //std::string str2 = str;
   //std::string str3 = str;
-  //std::string str4 = str;
 
   using trim_t = void(*)(char*);
   trim_t trim_platform_func = nullptr;
@@ -48,12 +46,11 @@ int main(int argc, char* argv[])
   trim_platform_func = trim::riscv::TrimRight;
   #endif
 
-  std::cout << str1 << str2 << str3 << str4 << "end\n";
+  std::cout << str1 << str2 << str3 << "end\n";
 
   trim::scalar::TrimRight(str1);
   trim::stdsimd::TrimRight(str2);
-  trim::stdsimd::TrimRightOnePass(str3);
-  trim_platform_func(str4);
+  trim_platform_func(str3);
 
-  std::cout << str1 << str2 << str3 << str4 << "end\n";
+  std::cout << str1 << str2 << str3 << "end\n";
 }
