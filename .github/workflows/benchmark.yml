@@ -21,8 +21,8 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2_o3.out ./trim_x86sse2_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2_o0.out ./trim_x86sse2_o0
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o3.out ./trim_x86sse2_o3
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o0.out ./trim_x86sse2_o0
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -48,8 +48,8 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2_o3.out ./trim_x86avx2_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2_o0.out ./trim_x86avx2_o0
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o3.out ./trim_x86avx2_o3
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o0.out ./trim_x86avx2_o0
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -75,11 +75,29 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64_o3.out ./trim_arm64_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64_o0.out ./trim_arm64_o0
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o3.out ./trim_arm64_o3
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o0.out ./trim_arm64_o0
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
         with:
           name: cachegrind-arm64
           path: cachegrind-arm64_*.out
+  result:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Output Results SSE2
+        run: |
+          cg_annotate --show=Dr --auto=no cachegrind_x86sse2-o3.out
+          cg_annotate --show=Dr --auto=no cachegrind_x86sse2-o0.out
+      - name: Output Results AVX2
+        run: |
+          cg_annotate --show=Dr --auto=no cachegrind_x86avx2-o3.out
+          cg_annotate --show=Dr --auto=no cachegrind_x86avx2-o0.out
+      - name: Output Results NEON
+        run: |
+          cg_annotate --show=Dr --auto=no cachegrind_arm64-o3.out
+          cg_annotate --show=Dr --auto=no cachegrind_arm64-o0.out
