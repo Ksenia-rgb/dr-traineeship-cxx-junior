@@ -3,7 +3,7 @@ name: Cachegrind
 on: pull_request
 
 env:
-  FILE_STR: test_input.txt
+  FILE_STR: test-input.txt
   FILE_MAIN: src/main.cpp
   TEST_MAIN: tests/test-main.cpp
   FILES_STD: src/trim-scalar.cpp src/trim-stdsimd.cpp
@@ -25,7 +25,7 @@ jobs:
 
       - name: Generate test file
         run: |
-          python3 .github/workflows/generator.py test_input.txt
+          python3 .github/workflows/generator.py $FILE_STR
 
       - name: Upload test file
         uses: actions/upload-artifact@v4
