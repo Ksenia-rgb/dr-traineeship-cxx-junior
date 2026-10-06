@@ -6,8 +6,8 @@ env:
   FILE_STR: long.txt
   FILE_MAIN: src/main.cpp
   TEST_MAIN: tests/test-main.cpp
-  FILES_ALL: src/trim-scalar.cpp src/trim-stdsimd.cpp
-  TESTS_ALL: tests/test-trim-scalar.cpp tests/test-trim-stdsimd.cpp
+  FILES_STD: src/trim-scalar.cpp src/trim-stdsimd.cpp
+  TESTS_STD: tests/test-trim-scalar.cpp tests/test-trim-stdsimd.cpp
   FILES_SSE2: src/trim-sse2.cpp
   TESTS_SSE2: tests/test-trim-sse2.cpp
   FILES_AVX2: src/trim-avx2.cpp
@@ -28,7 +28,7 @@ jobs:
 
       - name: Run tests
         run: |
-          g++ -Isrc $FILES_ALL $TESTS_ALL $TEST_MAIN -o trim-test
+          g++ -Isrc $FILES_STD $TESTS_STD $TEST_MAIN -o trim-test
           ./trim-test
   test-sse2:
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
 
       - name: Run tests
         run: |
-          g++ -mavx2 -Isrc $FILES_AVX22 $TESTS_AVX2 $TEST_MAIN -o trim-test
+          g++ -mavx2 -Isrc $FILES_AVX2 $TESTS_AVX2 $TEST_MAIN -o trim-test
           ./trim-test
   test-neon:
     runs-on: ubuntu-24.04-arm
@@ -80,8 +80,8 @@ jobs:
 
       - name: Build for x86 SSE2
         run: |
-          g++ -O3 -msse2 $FILES_ALL $FILES_SSE2 -o trim_sse2_o3
-          g++ -O0 -msse2 $FILES_ALL $FILES_SSE2 -o trim_sse2_o0
+          g++ -O3 -msse2 $FILE_MAIN $FILES_STD $FILES_SSE2 -o trim_sse2_o3
+          g++ -O0 -msse2 $FILE_MAIN $FILES_STD $FILES_SSE2 -o trim_sse2_o0
 
       - name: Run Cachegrind
         run: |
@@ -109,8 +109,8 @@ jobs:
 
       - name: Build for x86 AVX2
         run: |
-          g++ -O3 -mavx2 $FILES_ALL $FILES_AVX2 -o trim_avx2_o3
-          g++ -O0 -mavx2 $FILES_ALL $FILES_AVX2 -o trim_avx2_o0
+          g++ -O3 -mavx2 $FILE_MAIN $FILES_STD $FILES_AVX2 -o trim_avx2_o3
+          g++ -O0 -mavx2 $FILE_MAIN $FILES_STD $FILES_AVX2 -o trim_avx2_o0
 
       - name: Run Cachegrind
         run: |
@@ -138,8 +138,8 @@ jobs:
 
       - name: Build for ARM64 NEON
         run: |
-          g++ -O3 -march=armv8-a+simd $FILES_ALL $FILES_NEON -o trim_neon_o3
-          g++ -O0 -march=armv8-a+simd $FILES_ALL $FILES_NEON -o trim_neon_o0
+          g++ -O3 -march=armv8-a+simd $FILE_MAIN $FILES_STD $FILES_NEON -o trim_neon_o3
+          g++ -O0 -march=armv8-a+simd $FILE_MAIN $FILES_STD $FILES_NEON -o trim_neon_o0
 
       - name: Run Cachegrind
         run: |
