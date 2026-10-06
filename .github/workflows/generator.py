@@ -2,7 +2,7 @@ from random import randint
 import sys
 
 def write_random_long_str(file_name: str):
-  steps = randint(10, 100)
+  steps = randint(90, 100)
   letter = b"a"
   space = b" "
   with open(file_name, "wb") as data:
