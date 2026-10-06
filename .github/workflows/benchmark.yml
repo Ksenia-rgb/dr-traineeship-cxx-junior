@@ -16,8 +16,8 @@ jobs:
 
       - name: Build for SSE2
         run: |
-          g++ -O3 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o3
-          g++ -O0 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o0
+          g++ -O3 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o3
+          g++ -O0 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o0
 
       - name: Run Cachegrind
         run: |
@@ -43,8 +43,8 @@ jobs:
 
       - name: Build for AVX2
         run: |
-          g++ -O3 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o3
-          g++ -O0 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o0
+          g++ -O3 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o3
+          g++ -O0 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o0
 
       - name: Run Cachegrind
         run: |
@@ -70,8 +70,8 @@ jobs:
 
       - name: Build for ARM64
         run: |
-          g++ -O3 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-neon.cpp -o trim_arm64_o3
-          g++ -O0 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-neon.cpp -o trim_arm64_o0
+          g++ -O3 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_arm64_o3
+          g++ -O0 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_arm64_o0
 
       - name: Run Cachegrind
         run: |
