@@ -3,7 +3,7 @@ name: Cachegrind
 on: pull_request
 
 env:
-  FILE_STR: long.txt
+  FILE_STR: test_input.txt
   FILE_MAIN: src/main.cpp
   TEST_MAIN: tests/test-main.cpp
   FILES_STD: src/trim-scalar.cpp src/trim-stdsimd.cpp
@@ -18,6 +18,21 @@ env:
   CG_OPTIONS: --show=Dr --auto=no --threshold=1.0
 
 jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate test file
+        run: |
+          python3 .github/workflows/generator.py test_input.txt
+
+      - name: Upload test file
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-input
+          path: $FILE_STR
+          retention-days: 1 
   test-scalar-stdsimd:
     runs-on: ubuntu-latest
     steps:
@@ -67,11 +82,16 @@ jobs:
           g++ -march=armv8-a+simd -Isrc $FILES_NEON $TESTS_NEON $TEST_MAIN -o trim-test
           ./trim-test
   cachegrind-sse2:
-    needs: [test-scalar-stdsimd, test-sse2]
+    needs: [generate, test-scalar-stdsimd, test-sse2]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download test file
+        uses: actions/download-artifact@v4
+        with:
+          name: test-input
 
       - name: Install Valgrind
         run: |
@@ -85,7 +105,6 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          python3 .github/workflows/generator.py $FILE_STR
           valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-sse2-o3.out ./trim_sse2_o3 $FILE_STR
           valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-sse2-o0.out ./trim_sse2_o0 $FILE_STR
 
@@ -96,11 +115,16 @@ jobs:
           path: cachegrind-sse2-*.out
 
   cachegrind-avx2:
-    needs: [test-scalar-stdsimd, test-avx2]
+    needs: [generate, test-scalar-stdsimd, test-avx2]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download test file
+        uses: actions/download-artifact@v4
+        with:
+          name: test-input
 
       - name: Install Valgrind
         run: |
@@ -114,7 +138,6 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          python3 .github/workflows/generator.py $FILE_STR
           valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-avx2-o3.out ./trim_avx2_o3 $FILE_STR
           valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-avx2-o0.out ./trim_avx2_o0 $FILE_STR
 
@@ -125,11 +148,16 @@ jobs:
           path: cachegrind-avx2-*.out
 
   cachegrind-neon:
-    needs: [test-scalar-stdsimd, test-neon]
+    needs: [generate, test-scalar-stdsimd, test-neon]
     runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download test file
+        uses: actions/download-artifact@v4
+        with:
+          name: test-input
 
       - name: Install Valgrind
         run: |
@@ -143,7 +171,6 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          python3 .github/workflows/generator.py $FILE_STR
           valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-neon-o3.out ./trim_neon_o3 $FILE_STR
           valgrind $VLG_OPTIONS --cachegrind-out-file=cachegrind-neon-o0.out ./trim_neon_o0 $FILE_STR
 
