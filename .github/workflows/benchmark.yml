@@ -1,4 +1,4 @@
-name: ARM64 Cachegrind
+name: Cachegrind
 
 on: pull_request
 
@@ -113,13 +113,13 @@ jobs:
 
       - name: Output Results SSE2
         run: |
-          cg_annotate $CG_OPTIONS res/cachegrind-sse2/cachegrind-sse2-o3.out | sed -n '/-- Function:file/,$p'
-          cg_annotate $CG_OPTIONS res/cachegrind-sse2/cachegrind-sse2-o0.out | sed -n '/-- Function:file/,$p'
+          cg_annotate $CG_OPTIONS res/cachegrind-sse2/cachegrind-sse2-o3.out
+          cg_annotate $CG_OPTIONS res/cachegrind-sse2/cachegrind-sse2-o0.out
       - name: Output Results AVX2
         run: |
-          cg_annotate $CG_OPTIONS res/cachegrind-avx2/cachegrind-avx2-o3.out | sed -n '/-- Function:file/,$p'
-          cg_annotate $CG_OPTIONS res/cachegrind-avx2/cachegrind-avx2-o0.out | sed -n '/-- Function:file/,$p'
+          cg_annotate $CG_OPTIONS res/cachegrind-avx2/cachegrind-avx2-o3.out
+          cg_annotate $CG_OPTIONS res/cachegrind-avx2/cachegrind-avx2-o0.out
       - name: Output Results NEON
         run: |
-          cg_annotate $CG_OPTIONS res/cachegrind-neon/cachegrind-neon-o3.out | sed -n '/-- Function:file/,$p'
-          cg_annotate $CG_OPTIONS res/cachegrind-neon/cachegrind-neon-o0.out | sed -n '/-- Function:file/,$p'
+          cg_annotate $CG_OPTIONS res/cachegrind-neon/cachegrind-neon-o3.out
+          cg_annotate $CG_OPTIONS res/cachegrind-neon/cachegrind-neon-o0.out
