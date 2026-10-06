@@ -4,15 +4,70 @@ on: pull_request
 
 env:
   FILE_STR: long.txt
-  FILES_ALL: src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp
+  FILE_MAIN: src/main.cpp
+  TEST_MAIN: test/test-main.cpp
+  FILES_ALL: src/trim-scalar.cpp src/trim-stdsimd.cpp
+  TESTS_ALL: tests/test-trim-scalar.cpp tests/test-trim-stdsimd.cpp
   FILES_SSE2: src/trim-sse2.cpp
+  TESTS_SSE2: tests/test-trim-sse2.cpp
   FILES_AVX2: src/trim-avx2.cpp
+  TESTS_AVX2: tests/test-trim-avx2.cpp
   FILES_NEON: src/trim-neon.cpp
+  TESTS_NEON: tests/test-trim-neon.cpp
   VLG_OPTIONS: --tool=cachegrind --cache-sim=yes
   CG_OPTIONS: --show=Dr --auto=no
 
 jobs:
+  test-scalar-stdsimd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Boost
+        run: sudo apt-get update && sudo apt-get install -y libboost-test-dev
+
+      - name: Run tests
+        run: |
+          g++ $FILES_ALL $TESTS_ALL $TEST_MAIN -o trim-test
+          ./trim-test
+  test-sse2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Boost
+        run: sudo apt-get update && sudo apt-get install -y libboost-test-dev
+
+      - name: Run tests
+        run: |
+          g++ -msse2 $FILES_SSE2 $TESTS_SSE2 $TEST_MAIN -o trim-test
+          ./trim-test
+  test-avx2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Boost
+        run: sudo apt-get update && sudo apt-get install -y libboost-test-dev
+
+      - name: Run tests
+        run: |
+          g++ -mavx2 $FILES_AVX22 $TESTS_AVX2 $TEST_MAIN -o trim-test
+          ./trim-test
+  test-neon:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Boost
+        run: sudo apt-get update && sudo apt-get install -y libboost-test-dev
+
+      - name: Run tests
+        run: |
+          g++ -march=armv8-a+simd $FILES_NEON $TESTS_NEON $TEST_MAIN -o trim-test
+          ./trim-test
   cachegrind-sse2:
+    needs: [test-scalar-stdsimd, test-sse2]
     runs-on: ubuntu-latest
 
     steps:
@@ -41,6 +96,7 @@ jobs:
           path: cachegrind-sse2-*.out
 
   cachegrind-avx2:
+    needs: [test-scalar-stdsimd, test-avx2]
     runs-on: ubuntu-latest
 
     steps:
@@ -69,6 +125,7 @@ jobs:
           path: cachegrind-avx2-*.out
 
   cachegrind-neon:
+    needs: [test-scalar-stdsimd, test-neon]
     runs-on: ubuntu-24.04-arm
 
     steps:
