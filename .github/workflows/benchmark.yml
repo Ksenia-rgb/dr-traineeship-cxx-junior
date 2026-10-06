@@ -28,8 +28,8 @@ jobs:
       - name: Run Cachegrind
         run: |
           python3 .github/workflows/generator.py
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-sse2-o3.out ./trim_sse2_o3 long.txt
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-sse2-o0.out ./trim_sse2_o0 long.txt
+          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-sse2-o3.out ./trim_sse2_o3 long.txt
+          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-sse2-o0.out ./trim_sse2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -56,8 +56,8 @@ jobs:
       - name: Run Cachegrind
         run: |
           python3 .github/workflows/generator.py
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-avx2-o3.out ./trim_avx2_o3 long.txt
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-avx2-o0.out ./trim_avx2_o0 long.txt
+          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-avx2-o3.out ./trim_avx2_o3 long.txt
+          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-avx2-o0.out ./trim_avx2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -84,8 +84,8 @@ jobs:
       - name: Run Cachegrind
         run: |
           python3 .github/workflows/generator.py
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-neon-o3.out ./trim_neon_o3 long.txt
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-neon-o0.out ./trim_neon_o0 long.txt
+          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-neon-o3.out ./trim_neon_o3 long.txt
+          valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=cachegrind-neon-o0.out ./trim_neon_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
