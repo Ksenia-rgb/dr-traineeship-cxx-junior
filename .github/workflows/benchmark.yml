@@ -21,8 +21,9 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o3.out ./trim_x86sse2_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o0.out ./trim_x86sse2_o0
+          python3 .github/workflows/generator.py
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o3.out ./trim_x86sse2_o3 long.txt
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2-o0.out ./trim_x86sse2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -48,8 +49,9 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o3.out ./trim_x86avx2_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o0.out ./trim_x86avx2_o0
+          python3 .github/workflows/generator.py
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o3.out ./trim_x86avx2_o3 long.txt
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2-o0.out ./trim_x86avx2_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
@@ -75,8 +77,9 @@ jobs:
 
       - name: Run Cachegrind
         run: |
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o3.out ./trim_arm64_o3
-          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o0.out ./trim_arm64_o0
+          python3 .github/workflows/generator.py
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o3.out ./trim_arm64_o3 long.txt
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64-o0.out ./trim_arm64_o0 long.txt
 
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
