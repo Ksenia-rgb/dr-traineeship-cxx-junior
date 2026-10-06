@@ -1,0 +1,85 @@
+name: ARM64 Cachegrind
+
+on: pull_request
+
+jobs:
+  cachegrind-sse2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
+      - name: Build for SSE2
+        run: |
+          g++ -O3 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o3
+          g++ -O0 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-sse2.cpp -o trim_x86sse2_o0
+
+      - name: Run Cachegrind
+        run: |
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2_o3.out ./trim_x86sse2_o3
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86sse2_o0.out ./trim_x86sse2_o0
+
+      - name: Upload Cachegrind Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cachegrind-x86sse2
+          path: cachegrind-x86sse2_*.out
+
+  cachegrind-avx2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
+      - name: Build for AVX2
+        run: |
+          g++ -O3 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o3
+          g++ -O0 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-avx2.cpp -o trim_x86avx2_o0
+
+      - name: Run Cachegrind
+        run: |
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2_o3.out ./trim_x86avx2_o3
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-x86avx2_o0.out ./trim_x86avx2_o0
+
+      - name: Upload Cachegrind Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cachegrind-x86avx2
+          path: cachegrind-x86avx2_*.out
+
+  cachegrind-arm64:
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
+      - name: Build for ARM64
+        run: |
+          g++ -O3 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-neon.cpp -o trim_arm64_o3
+          g++ -O0 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-strsimd.cpp src/trim-neon.cpp -o trim_arm64_o0
+
+      - name: Run Cachegrind
+        run: |
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64_o3.out ./trim_arm64_o3
+          valgrind --tool=cachegrind --cachegrind-out-file=cachegrind-arm64_o0.out ./trim_arm64_o0
+
+      - name: Upload Cachegrind Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cachegrind-arm64
+          path: cachegrind-arm64_*.out
