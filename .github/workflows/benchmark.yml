@@ -2,6 +2,12 @@ name: ARM64 Cachegrind
 
 on: pull_request
 
+env:
+  FILES_ALL: src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp
+  FILES_SSE2: src/trim-sse2.cpp
+  FILES_AVX2: src/trim-avx2.cpp
+  FILES_NEON: src/trim-neon.cpp
+
 jobs:
   cachegrind-sse2:
     runs-on: ubuntu-latest
@@ -16,8 +22,8 @@ jobs:
 
       - name: Build for x86 SSE2
         run: |
-          g++ -O3 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_sse2_o3
-          g++ -O0 -msse2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-sse2.cpp -o trim_sse2_o0
+          g++ -O3 -msse2 $FILES_ALL $FILES_SSE2 -o trim_sse2_o3
+          g++ -O0 -msse2 $FILES_ALL $FILES_SSE2 -o trim_sse2_o0
 
       - name: Run Cachegrind
         run: |
@@ -28,8 +34,8 @@ jobs:
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
         with:
-          name: cachegrind-x86sse2
-          path: cachegrind-x86sse2-*.out
+          name: cachegrind-sse2
+          path: cachegrind-sse2-*.out
 
   cachegrind-avx2:
     runs-on: ubuntu-latest
@@ -44,8 +50,8 @@ jobs:
 
       - name: Build for x86 AVX2
         run: |
-          g++ -O3 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_avx2_o3
-          g++ -O0 -mavx2 src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-avx2.cpp -o trim_avx2_o0
+          g++ -O3 -mavx2 $FILES_ALL $FILES_AVX2 -o trim_avx2_o3
+          g++ -O0 -mavx2 $FILES_ALL $FILES_AVX2 -o trim_avx2_o0
 
       - name: Run Cachegrind
         run: |
@@ -56,8 +62,8 @@ jobs:
       - name: Upload Cachegrind Results
         uses: actions/upload-artifact@v4
         with:
-          name: cachegrind-x86avx2
-          path: cachegrind-x86avx2-*.out
+          name: cachegrind-avx2
+          path: cachegrind-avx2-*.out
 
   cachegrind-neon:
     runs-on: ubuntu-24.04-arm
@@ -72,8 +78,8 @@ jobs:
 
       - name: Build for ARM64 NEON
         run: |
-          g++ -O3 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_neon_o3
-          g++ -O0 -march=armv8-a+simd src/main.cpp src/trim-scalar.cpp src/trim-stdsimd.cpp src/trim-neon.cpp -o trim_neon_o0
+          g++ -O3 -march=armv8-a+simd $FILES_ALL $FILES_NEON -o trim_neon_o3
+          g++ -O0 -march=armv8-a+simd $FILES_ALL $FILES_NEON -o trim_neon_o0
 
       - name: Run Cachegrind
         run: |
