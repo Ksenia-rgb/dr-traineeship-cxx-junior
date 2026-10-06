@@ -1,13 +1,12 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <valgrind/callgrind.h>
 
 #include "trim.hpp"
 
 int main(int argc, char* argv[])
 {
-  std::string str{"fgd____________"};
+  std::string str;
   if (argc == 2)
   {
     std::ifstream fin(argv[1], std::ios::binary | std::ios::ate);
@@ -21,17 +20,40 @@ int main(int argc, char* argv[])
     str.resize(size);
     fin.read(str.data(), size);
   }
-  std::string str1 = str;
-  std::string str2 = str;
-  std::string str3 = str;
+  char str1[] = " a  aa       ";
+  char str2[] = "f   gd                              ";
+  char str3[] = "h   hh                   ";
+  char str4[] = "oo   o      ";
+  //std::string str1 = str;
+  //std::string str2 = str;
+  //std::string str3 = str;
+  //std::string str4 = str;
 
-  for (size_t i = 0; i < 10; i++)
-  {
-    stdsimd::TrimRight(str2.data());
-    easy::TrimRight(str1.data());
+  using trim_t = void(*)(char*);
+  trim_t trim_platform_func = nullptr;
 
-    str1 = str;
-    str2 = str;
-    str3 = str;
-  }
+  #ifdef __SSE2__
+  trim_platform_func = trim::sse2::TrimRight;
+  #endif
+
+  #ifdef __AVX2__
+  trim_platform_func = trim::avx2::TrimRight;
+  #endif
+
+  #ifdef __ARM_NEON
+  trim_platform_func = trim::neon::TrimRight;
+  #endif
+
+  #if defined(__riscv_v_intrinsic) && defined(__riscv_vector)
+  trim_platform_func = trim::riscv::TrimRight;
+  #endif
+
+  std::cout << str1 << str2 << str3 << str4 << "end\n";
+
+  trim::scalar::TrimRight(str1);
+  trim::stdsimd::TrimRight(str2);
+  trim::stdsimd::TrimRightOnePass(str3);
+  trim_platform_func(str4);
+
+  std::cout << str1 << str2 << str3 << str4 << "end\n";
 }

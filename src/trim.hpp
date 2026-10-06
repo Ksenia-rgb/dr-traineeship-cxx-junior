@@ -1,18 +1,33 @@
 #ifndef TRIM_HPP
 #define TRIM_HPP
 
-namespace stdsimd
+namespace trim
 {
-  void TrimRight(char* str);
-  void TrimRightOne(char* str);
-}
-namespace intrinsimd
-{
-  void TrimRight(char* str);
-}
-namespace easy
-{
-  void TrimRight(char* str);
+  namespace stdsimd
+  {
+    void TrimRight(char* str);
+    void TrimRightOnePass(char* str);
+  }
+  namespace sse2
+  {
+    void TrimRight(char* str);
+  }
+  namespace avx2
+  {
+    void TrimRight(char* str);
+  }
+  namespace neon
+  {
+    void TrimRight(char* str);
+  }
+  namespace riscv
+  {
+    void TrimRight(char* str);
+  }
+  namespace scalar
+  {
+    void TrimRight(char* str);
+  }
 }
 
 #endif
