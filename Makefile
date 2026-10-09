@@ -5,6 +5,7 @@ OBJ_DIR = $(BUILD_DIR)/obj
 BIN_DIR = $(BUILD_DIR)/bin
 SOURCE_DIR = src
 TEST_DIR = tests
+CACHEGRIND_FILE = $(BUILD_DIR)/cachegrind.out
 
 CXX = g++
 CPPFLAGS = -std=c++17 -Wall -I $(SOURCE_DIR)
@@ -37,9 +38,14 @@ test: tests
 	@echo "[RUN] tests"
 	@./$(test_bin)
 
+cachegrind: build | $(BIN_DIR)
+	@valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=$(CACHEGRIND_FILE) ./$(main_bin) $(ARGS)
+	@cg_annotate --show=Dr --auto=no --threshold=1.0 $(BUILD_DIR)/cachegrind.out
+
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(BIN_DIR)
+	rm $(BUILD_DIR)/*.out
 
 $(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
 	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
