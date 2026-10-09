@@ -39,13 +39,17 @@ test: tests
 	@./$(test_bin)
 
 cachegrind: build | $(BIN_DIR)
+	VALGRIND := $(shell command -v valgrind 2>/dev/null)
+	ifeq ($(VALGRIND),)
+		$(error valgrind not found)
+	endif
 	@valgrind --tool=cachegrind --cache-sim=yes --cachegrind-out-file=$(CACHEGRIND_FILE) ./$(main_bin) $(ARGS)
 	@cg_annotate --show=Dr --auto=no --threshold=1.0 $(BUILD_DIR)/cachegrind.out
 
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(BIN_DIR)
-	rm $(BUILD_DIR)/*.out
+	rm -f $(BUILD_DIR)/*.out
 
 $(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
 	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
