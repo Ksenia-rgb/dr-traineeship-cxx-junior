@@ -1,0 +1,62 @@
+#include "trim.hpp"
+
+#include <iostream>
+#include <experimental/simd>
+
+void trim::stdsimd::TrimRight(char* str)
+{
+  namespace stdx = std::experimental;
+  using simd_t = stdx::native_simd< char >;
+  using simd_mask_t = stdx::native_simd_mask< char >;
+  constexpr size_t simd_size = simd_t::size();
+
+  const char delim_end = '\0';
+  const char delim_space = ' ';
+
+  const simd_t simd_delim_end{delim_end};
+  const simd_t simd_delim_space{delim_space};
+
+  size_t num_end = 0;
+
+  for (size_t i = 0; !num_end; i += simd_size)
+  {
+    simd_t simd_values;
+    simd_values.copy_from(str + i, stdx::element_aligned);
+
+    simd_mask_t mask_end = (simd_values == simd_delim_end);
+    if (stdx::any_of(mask_end))
+    {
+      num_end = i + stdx::find_first_set(mask_end);
+    }
+  }
+
+  char* temp = str + num_end;
+  char* replace_for = nullptr;
+
+  while (!replace_for && static_cast< size_t >(temp - str) >= simd_size)
+  {
+    simd_t simd_values;
+    simd_values.copy_from(temp - simd_size, stdx::element_aligned);
+
+    simd_mask_t mask_space = (simd_values != simd_delim_space);
+    if (stdx::any_of(mask_space))
+    {
+      replace_for = temp - simd_size + stdx::find_last_set(mask_space) + 1;
+    }
+
+    temp -= simd_size;
+  }
+  while (!replace_for && temp != str)
+  {
+    --temp;
+    if (*temp != delim_space)
+    {
+      replace_for = temp + 1;
+    }
+  }
+  if (!replace_for)
+  {
+    replace_for = str;
+  }
+  *replace_for = delim_end;
+}
