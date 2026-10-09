@@ -15,7 +15,7 @@ env:
   FILES_NEON: src/trim-neon.cpp
   TESTS_NEON: tests/test-trim-neon.cpp
   VLG_OPTIONS: --tool=cachegrind --cache-sim=yes
-  CG_OPTIONS: --show=Dr --auto=no --threshold=1.0
+  CG_OPTIONS: --show=Dr --auto=no
 
 jobs:
   generate:
