@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "trim.hpp"
+#include <trim.hpp>
 
 #ifdef __SSE2__
 #ifndef __AVX2__

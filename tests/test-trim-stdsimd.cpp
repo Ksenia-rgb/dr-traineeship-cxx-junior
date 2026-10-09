@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "trim.hpp"
+#include <trim.hpp>
 
 BOOST_AUTO_TEST_CASE(test_stdsimd_empty_str)
 {
